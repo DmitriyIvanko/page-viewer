@@ -1,3 +1,5 @@
+$header_vh: 5vh;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -7,7 +9,7 @@
 .main-header {
   background-color: green;
   border-bottom: 1px solid black;
-  min-height: 5vh;
+  min-height: $header_vh;
 }
 
 .page-container {
@@ -15,12 +17,44 @@
   // display: flex;
   // flex-direction: column;
   // justify-content: center;
+
   overflow: auto;
   overflow: overlay;
+  // position: relative;
+}
+
+.rendered-pages {
+  overflow: hidden;
+  height: calc(100vh - $header_vh);
 }
 
 .page {
   display: flex;
   justify-content: center;
   border: 1px solid black; // remove
+}
+
+.virtual-scroll-container {
+  position: absolute;
+  overflow: auto;
+  overflow: overlay;
+  // background-color: red;
+  width: 15px;
+  // align-self: end;
+  height: 95vh;
+  right: 0;
+
+  .virtual-scroll {
+    width: 20px;
+  }
+}
+
+.main-container {
+  overflow: auto;
+  overflow: overlay;
+
+  position: relative;
+  height: 100vh;
+  width: 100%;
+
 }

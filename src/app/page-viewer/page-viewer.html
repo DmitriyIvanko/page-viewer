@@ -1,13 +1,25 @@
 <div class="main-header">
   page-viewer works!
 </div>
-<div class="page-container">
-  @for (page of pageList(); track page.number) {
-    <div class="page">
-      <img [alt]="'page ' + page.number"
-          [src]="'assets/images/' + page.imageUrl"
-          [height]="pageHeight()"
-          [width]="pageWidth()" />
+<div class="main-container">
+  <div class="virtual-scroll-container">
+    <div class="virtual-scroll"
+        [style.height.px]="totalHeight()">
     </div>
-  }
+  </div>
+
+    <div class="rendered-pages">
+      @for (page of pageList(); track page.number) {
+        <div class="page">
+          <img [alt]="'page ' + page.number"
+              [src]="'assets/images/' + page.imageUrl"
+              [height]="pageHeight()"
+              [width]="pageWidth()" />
+        </div>
+      }
+    </div>
 </div>
+
+
+
+
