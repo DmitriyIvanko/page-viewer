@@ -6,14 +6,12 @@
   box-sizing: border-box;
 }
 
+:root {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
-  -webkit-text-size-adjust: 100%; // 3
+  -webkit-text-size-adjust: 100%;
 }
 
-:root {
-//   @media (prefers-reduced-motion: no-preference) {
-    scroll-behavior: smooth;
-//   }
-}

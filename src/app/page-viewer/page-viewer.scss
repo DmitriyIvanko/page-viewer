@@ -1,14 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 .main-header {
   background-color: green;
   border-bottom: 1px solid black;
-  height: 5vh;
+  min-height: 5vh;
 }
 
 .page-container {
   // TODO: no need?
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: center;
+  overflow: auto;
+  overflow: overlay;
 }
 
 .page {
