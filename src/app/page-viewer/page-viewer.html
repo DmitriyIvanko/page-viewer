@@ -1,1 +1,9 @@
 <p>page-viewer works!</p>
+@for (page of pageList(); track page.number) {
+  {{ page.imageUrl }}
+  <img [alt]="'page ' + page.number"
+       [src]="page.imageUrl"
+       [height]="pageHeight()"
+       [width]="pageWidth()"
+         />
+}
