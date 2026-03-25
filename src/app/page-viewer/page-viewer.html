@@ -1,9 +1,14 @@
-<p>page-viewer works!</p>
-@for (page of pageList(); track page.number) {
-  {{ page.imageUrl }}
-  <img [alt]="'page ' + page.number"
-       [src]="'assets/images/' + page.imageUrl"
-       [height]="pageHeight()"
-       [width]="pageWidth()"
-         />
-}
+<div class="main-header">
+  <p>page-viewer works!</p>
+</div>
+<div class="page-container">
+  @for (page of pageList(); track page.number) {
+    <div class="page">
+      <img [alt]="'page ' + page.number"
+          [src]="'assets/images/' + page.imageUrl"
+          [height]="pageHeight()"
+          [width]="pageWidth()"
+            />
+    </div>
+  }
+</div>

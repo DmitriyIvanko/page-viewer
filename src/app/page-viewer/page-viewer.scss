@@ -1,0 +1,17 @@
+.main-header {
+  background-color: green;
+  border-bottom: 1px solid black;
+  height: 5vh;
+}
+
+.page-container {
+  // TODO: no need?
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.page {
+  display: flex;
+  justify-content: center;
+}
