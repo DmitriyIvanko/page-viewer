@@ -2,7 +2,7 @@
 @for (page of pageList(); track page.number) {
   {{ page.imageUrl }}
   <img [alt]="'page ' + page.number"
-       [src]="page.imageUrl"
+       [src]="'assets/images/' + page.imageUrl"
        [height]="pageHeight()"
        [width]="pageWidth()"
          />
