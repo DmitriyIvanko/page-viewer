@@ -1,10 +1,12 @@
 <div class="main-header">
   page-viewer works!
+  RenderedPages: {{ renderedPages() | json}}
 </div>
 <div class="main-container">
-  <div class="virtual-scroll-container">
+  <div class="virtual-scroll-container"
+       (scroll)="onVirtualScroll($event)">
     <div class="virtual-scroll"
-        [style.height.px]="totalHeight()">
+         [style.height.px]="totalHeight()">
     </div>
   </div>
 
