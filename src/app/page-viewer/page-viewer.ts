@@ -6,7 +6,9 @@ import { INITIAL_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT } from
 
 @Component({
   selector: 'app-page-viewer',
-  imports: [NgStyle, JsonPipe // TODO: remove],
+  imports: [NgStyle, JsonPipe // TODO: remove
+
+  ],
   templateUrl: './page-viewer.html',
   styleUrl: './page-viewer.scss',
 })
@@ -27,7 +29,12 @@ export class PageViewer {
   });
   readonly currentVisiblePageIndex = computed(() => {
     const totalPage = this.pageList().length;
-    return Math.trunc(totalPage * this.scrollRatio());
+
+    if (totalPage === 0) {
+      return -1;
+    }
+
+    return Math.min(totalPage - 1, Math.trunc(totalPage * this.scrollRatio()));
   })
   readonly renderedPages = computed(() => {
     const renderedPages = this.pageList().slice(this.renderedRange().start, this.renderedRange().end);
@@ -42,8 +49,15 @@ export class PageViewer {
   constructor() {
     effect(() => {
       const renderedPagesElement = this.renderedPagesElement()?.nativeElement as HTMLDivElement | undefined;
-      // const renderedPagesValue = this.renderedPages();
-      // const currentPageIndex = this.currentVisiblePageIndex();
+      const renderedPagesValue = this.renderedPages();
+      const currentPageIndex = this.currentVisiblePageIndex();
+      console.log('currentVisibleIndex:' + currentPageIndex);
+      console.log('scrollRatio:' + this.scrollRatio());
+
+      const currentPagePartOf = this.scrollRatio() * this.pageList().length;
+      console.log('currentPagePartOf:' + currentPagePartOf);
+      const instruction = ((currentPagePartOf * PAGE_HEIGHT_PX) / (PAGE_HEIGHT_PX * this.renderedPages().length))
+      console.log('instruction:' + instruction);
 
       if (renderedPagesElement == null) {
         return;
@@ -64,14 +78,15 @@ export class PageViewer {
 
       debugger;
 
-      // const scrollHeight = ; // renderedPagesValue.length * PAGE_HEIGHT_PX;
+      const scrollHeight = renderedPagesValue.length * PAGE_HEIGHT_PX;
       // console.log(this.scrollRatio())
-      const scrollTop = Math.max(0, Math.trunc(this.scrollRatio() * this.totalHeight() - PAGE_HEIGHT_PX));
+      const scrollTop = Math.max(0, Math.trunc(this.scrollRatio() * scrollHeight - renderedPagesElement.clientHeight));
+      console.log(scrollTop);
       // const scrollTop = preScrollTop % PAGE_HEIGHT_PX;
       // this.prevRenderedPage = currRenderedPages;
       // console.log(scrollTop);
       renderedPagesElement.scroll({
-        top: scrollTop,
+        top: instruction * (PAGE_HEIGHT_PX * this.renderedPages().length) - renderedPagesElement.clientHeight,
       })
     })
   }

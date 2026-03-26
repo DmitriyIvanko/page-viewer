@@ -12,7 +12,7 @@
 
     <div #renderedPagesElement
          class="rendered-pages">
-      @for (page of pageList(); track page.number) {
+      @for (page of renderedPages(); track page.number) {
         <div class="page">
           <img [alt]="'page ' + page.number"
                [src]="'assets/images/' + page.imageUrl"
@@ -23,6 +23,7 @@
         Empty
       }
     </div>
+
 </div>
 
 
