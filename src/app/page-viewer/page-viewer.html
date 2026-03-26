@@ -1,6 +1,6 @@
 <div class="main-header">
   page-viewer works!
-  RenderedPages: {{ renderedPages() | json}}
+  RenderedPages: {{ renderedRange() | json}}
 </div>
 <div class="main-container">
   <div class="virtual-scroll-container"
@@ -10,14 +10,17 @@
     </div>
   </div>
 
-    <div class="rendered-pages">
+    <div #renderedPagesElement
+         class="rendered-pages">
       @for (page of pageList(); track page.number) {
         <div class="page">
           <img [alt]="'page ' + page.number"
-              [src]="'assets/images/' + page.imageUrl"
-              [height]="pageHeight()"
-              [width]="pageWidth()" />
+               [src]="'assets/images/' + page.imageUrl"
+               [height]="pageHeight()"
+               [width]="pageWidth()" />
         </div>
+      } @empty {
+        Empty
       }
     </div>
 </div>
