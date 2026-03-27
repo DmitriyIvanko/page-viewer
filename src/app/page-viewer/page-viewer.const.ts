@@ -10,3 +10,4 @@ export const PAGE_HEIGHT_PX = 1_123;
 // empirical const for smooth behavior:
 export const MIDDLE_STRATEGY_SHIFT = 0.24;
 export const END_STRATEGY_SHIFT = 0.34;
+

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, computed, effect, signal, viewChild } from '@angular/core';
 
 import { MOCK_DATA } from './api.mock';
 import { END_STRATEGY_SHIFT, INITIAL_ZOOM, MIDDLE_STRATEGY_SHIFT, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT, WIDTH_EPS } from './page-viewer.const';
@@ -10,7 +10,6 @@ import { END_STRATEGY_SHIFT, INITIAL_ZOOM, MIDDLE_STRATEGY_SHIFT, PAGE_HEIGHT_PX
   styleUrl: './page-viewer.scss',
 })
 export class PageViewer {
-
   readonly data = signal(MOCK_DATA);
   readonly pageList = computed(() => this.data().pages);
   readonly pageWidth = signal(PAGE_WIDTH_PX)
@@ -97,7 +96,6 @@ export class PageViewer {
           top: scrollTo,
         });
       });
-
     })
   }
 
@@ -117,7 +115,7 @@ export class PageViewer {
       return null;
     }
 
-    const scrollToRatio = y / (widthWithShift) * (args.scrollRatio - width * args.currentPageIndex) + shiftY - END_STRATEGY_SHIFT;
+    const scrollToRatio = y / widthWithShift * (args.scrollRatio - width * args.currentPageIndex) + shiftY - END_STRATEGY_SHIFT;
 
     return scrollToRatio;
   }
@@ -185,12 +183,11 @@ export class PageViewer {
   }
 
   onVirtualScroll(event: Event): void {
-    const scrollContainer = event.currentTarget as HTMLDivElement | null;
+    const scrollContainer = event.target as HTMLDivElement | null;
 
     if (scrollContainer == null) {
       return;
     }
-
     const scrollHeight = scrollContainer.scrollHeight;
     const scrollTop = scrollContainer.scrollTop;
     const clientHeight =  scrollContainer.clientHeight;
