@@ -91,9 +91,13 @@ export class PageViewer {
       }
 
       const scrollTo = scrollToRatio * renderedTotalHeight;
-      renderedPagesElement.scroll({
-        top: scrollTo,
-      })
+
+      requestAnimationFrame(() => {
+        renderedPagesElement.scroll({
+          top: scrollTo,
+        });
+      });
+
     })
   }
 
