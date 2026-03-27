@@ -46,49 +46,65 @@ export class PageViewer {
 
   // private prevRenderedPage: string | null = null;
 
+
+
   constructor() {
     effect(() => {
       const renderedPagesElement = this.renderedPagesElement()?.nativeElement as HTMLDivElement | undefined;
       const renderedPagesValue = this.renderedPages();
       const currentPageIndex = this.currentVisiblePageIndex();
-      console.log('currentVisibleIndex:' + currentPageIndex);
-      console.log('scrollRatio:' + this.scrollRatio());
+      const type = this.getType(currentPageIndex);
+      const totalHeightValue = this.totalHeight();
 
-      const currentPagePartOf = this.scrollRatio() * this.pageList().length;
-      console.log('currentPagePartOf:' + currentPagePartOf);
-      const instruction = ((currentPagePartOf * PAGE_HEIGHT_PX) / (PAGE_HEIGHT_PX * this.renderedPages().length))
-      console.log('instruction:' + instruction);
-
-      if (renderedPagesElement == null) {
+      if (renderedPagesElement == null || totalHeightValue === 0) {
         return;
       }
 
-      // const currRenderedPages =  renderedPagesValue.map((item) => item.number).join(',');
+      const startX = renderedPagesElement.clientHeight / totalHeightValue;
+      const endX1 = 1 / this.pageList().length - 0.01; // eps
+      const x = Math.max(0, endX1 - startX);
 
+      const renderedTotalHeight = (this.renderedPages().length * PAGE_HEIGHT_PX);
+      if (renderedTotalHeight === 0) {
+        return;
+      }
+      const startY = renderedPagesElement.clientHeight / renderedTotalHeight;
+      const endY = 1 / this.renderedPages().length;
+      const y = Math.max(0,endY - startY);
 
+      if (x === 0) {
+        return;
+      }
 
-      // console.log(currRenderedPages);
+      const tg = y / x;
 
-      // let shiftPx: number = 0;
-      // if (this.prevRenderedPage != null && this.prevRenderedPage !== currRenderedPages) {
-      //   console.log('changed view');
-      //   shiftPx = PAGE_HEIGHT_PX;
-      // }
-      // console.log(currentPageIndex)
+      const scrollToRatio = tg * (Math.max(0, this.scrollRatio() - startX));
+      const scrollTo = scrollToRatio * renderedTotalHeight;
+      console.log('type' + type);
+      console.log('scrollTo' + scrollTo);
 
-      debugger;
-
-      const scrollHeight = renderedPagesValue.length * PAGE_HEIGHT_PX;
-      // console.log(this.scrollRatio())
-      const scrollTop = Math.max(0, Math.trunc(this.scrollRatio() * scrollHeight - renderedPagesElement.clientHeight));
-      console.log(scrollTop);
-      // const scrollTop = preScrollTop % PAGE_HEIGHT_PX;
-      // this.prevRenderedPage = currRenderedPages;
-      // console.log(scrollTop);
       renderedPagesElement.scroll({
-        top: instruction * (PAGE_HEIGHT_PX * this.renderedPages().length) - renderedPagesElement.clientHeight,
+        top: scrollTo,
       })
     })
+  }
+
+  private scrollStartStrategy(): void {
+
+  }
+
+  private getType(currentVisibleIndex: number): 'start' | 'middle' | 'end' {
+      switch (currentVisibleIndex) {
+        case 0: {
+          return 'start';
+        }
+        case (this.pageList().length - 1): {
+          return 'end'
+        }
+        default: {
+          return 'middle'
+        }
+      }
   }
 
   onVirtualScroll(event: Event): void {
@@ -103,7 +119,7 @@ export class PageViewer {
     const scrollTop = scrollContainer.scrollTop;
     const clientHeight =  scrollContainer.clientHeight;
 
-    console.log('Full view scroll: ' + (scrollTop + clientHeight) + ' of ' + scrollHeight);
+    // console.log('Full view scroll: ' + (scrollTop + clientHeight) + ' of ' + scrollHeight);
     const scrollRatio = scrollHeight === 0
       ? 0
       : (scrollTop + clientHeight) / scrollHeight;
