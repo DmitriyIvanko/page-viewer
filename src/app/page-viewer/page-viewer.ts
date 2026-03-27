@@ -21,7 +21,7 @@ export class PageViewer {
     const currentPageIndex = this.currentVisiblePageIndex();
     return {
       start: Math.max(0, currentPageIndex - PRELOAD_PAGES_COUNT),
-      end: Math.min(this.pageList().length, currentPageIndex + 1 +  PRELOAD_PAGES_COUNT),
+      end: Math.min(this.pageList().length, currentPageIndex + PRELOAD_PAGES_COUNT + 1),
     };
   });
   readonly currentVisiblePageIndex = computed(() => {
@@ -78,7 +78,6 @@ export class PageViewer {
       });
     })
   }
-
 
   onVirtualScroll(event: Event): void {
     const scrollContainer = event.target as HTMLDivElement | null;
