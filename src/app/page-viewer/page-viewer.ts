@@ -1,14 +1,11 @@
-import { JsonPipe, NgStyle } from '@angular/common';
-import { Component, ElementRef, computed, effect, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, signal, viewChild } from '@angular/core';
 
 import { MOCK_DATA } from './api.mock';
-import { INITIAL_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT } from './page-viewer.const';
+import { END_STRATEGY_SHIFT, INITIAL_ZOOM, MIDDLE_STRATEGY_SHIFT, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT, WIDTH_EPS } from './page-viewer.const';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-page-viewer',
-  imports: [NgStyle, JsonPipe // TODO: remove
-
-  ],
   templateUrl: './page-viewer.html',
   styleUrl: './page-viewer.scss',
 })
@@ -38,59 +35,135 @@ export class PageViewer {
   })
   readonly renderedPages = computed(() => {
     const renderedPages = this.pageList().slice(this.renderedRange().start, this.renderedRange().end);
-    // console.log(renderedPages.map((item) => item.number).join(','))
     return renderedPages;
   });
   private readonly scrollRatio = signal<number>(0);
   private readonly renderedPagesElement = viewChild<ElementRef<HTMLDivElement>>('renderedPagesElement');
 
-  // private prevRenderedPage: string | null = null;
-
-
-
   constructor() {
     effect(() => {
       const renderedPagesElement = this.renderedPagesElement()?.nativeElement as HTMLDivElement | undefined;
-      const renderedPagesValue = this.renderedPages();
       const currentPageIndex = this.currentVisiblePageIndex();
       const type = this.getType(currentPageIndex);
       const totalHeightValue = this.totalHeight();
+      const renderedPagesCount = this.renderedPages().length;
+      const totalPageCount = this.pageList().length;
+      const renderedTotalHeight = renderedPagesCount * PAGE_HEIGHT_PX;
 
-      if (renderedPagesElement == null || totalHeightValue === 0) {
+      if (renderedPagesElement == null || totalHeightValue === 0 || renderedTotalHeight === 0) {
         return;
       }
 
-      const startX = renderedPagesElement.clientHeight / totalHeightValue;
-      const endX1 = 1 / this.pageList().length - 0.01; // eps
-      const x = Math.max(0, endX1 - startX);
+      const scrollToRatio = ((): number | null | undefined => {
+        switch (type) {
+          case 'start': {
+            return this.scrollStartStrategy({
+              renderedPagesCount,
+              clientHeight: renderedPagesElement.clientHeight,
+              scrollRatio: this.scrollRatio(),
+              totalHeightValue,
+              renderedTotalHeight,
+              totalPageCount,
+            });
+          }
+          case 'middle': {
+            return this.scrollMiddleStrategy({
+              currentPageIndex,
+              renderedPagesCount,
+              scrollRatio: this.scrollRatio(),
+              totalPageCount,
+            });
+          }
+          case 'end': {
+            return this.scrollEndStrategy({
+              currentPageIndex,
+              renderedPagesCount,
+              scrollRatio: this.scrollRatio(),
+              totalPageCount,
+            })
+          }
+        }
+      })()
 
-      const renderedTotalHeight = (this.renderedPages().length * PAGE_HEIGHT_PX);
-      if (renderedTotalHeight === 0) {
+      if (scrollToRatio == null) {
+        console.warn('Data inconsistent');
         return;
       }
-      const startY = renderedPagesElement.clientHeight / renderedTotalHeight;
-      const endY = 1 / this.renderedPages().length;
-      const y = Math.max(0,endY - startY);
 
-      if (x === 0) {
-        return;
-      }
-
-      const tg = y / x;
-
-      const scrollToRatio = tg * (Math.max(0, this.scrollRatio() - startX));
       const scrollTo = scrollToRatio * renderedTotalHeight;
-      console.log('type' + type);
-      console.log('scrollTo' + scrollTo);
-
       renderedPagesElement.scroll({
         top: scrollTo,
       })
     })
   }
 
-  private scrollStartStrategy(): void {
+  private scrollEndStrategy(args: {
+    currentPageIndex: number;
+    totalPageCount: number,
+    scrollRatio: number,
+    renderedPagesCount: number,
+  }): number | null {
+    const width = 1 / args.totalPageCount;
+    const shiftY = 1 / args.renderedPagesCount;
+    const y = shiftY;
 
+    const widthWithShift = width - WIDTH_EPS;
+
+    if (widthWithShift === 0) {
+      return null;
+    }
+
+    const scrollToRatio = y / (widthWithShift) * (args.scrollRatio - width * args.currentPageIndex) + shiftY - END_STRATEGY_SHIFT;
+
+    return scrollToRatio;
+  }
+
+  private scrollMiddleStrategy(args: {
+    currentPageIndex: number;
+    totalPageCount: number,
+    scrollRatio: number,
+    renderedPagesCount: number,
+  }): number | null {
+    const width = 1 / args.totalPageCount;
+    const shiftY = 1 / args.renderedPagesCount;
+    const y = shiftY;
+
+    const widthWithShift = width - WIDTH_EPS;
+
+    if (widthWithShift === 0) {
+      return null;
+    }
+
+    const scrollToRatio = y / (widthWithShift) * (args.scrollRatio - width * args.currentPageIndex) + shiftY - MIDDLE_STRATEGY_SHIFT;
+
+    return scrollToRatio;
+  }
+
+  private scrollStartStrategy(args: {
+    clientHeight: number,
+    totalHeightValue: number,
+    totalPageCount: number,
+    renderedPagesCount: number,
+    renderedTotalHeight: number,
+    scrollRatio: number,
+  }): number | null {
+    const startX = args.clientHeight / args.totalHeightValue;
+    const endX1 = 1 / args.totalPageCount - WIDTH_EPS;
+    const x = Math.max(0, endX1 - startX);
+
+
+    const startY = args.clientHeight / args.renderedTotalHeight;
+    const endY = 1 / args.renderedPagesCount;
+    const y = Math.max(0,endY - startY);
+
+    if (x === 0) {
+      return null;
+    }
+
+    const tg = y / x;
+
+    const scrollToRatio = tg * (Math.max(0, args.scrollRatio - startX));
+    return scrollToRatio
   }
 
   private getType(currentVisibleIndex: number): 'start' | 'middle' | 'end' {
@@ -108,10 +181,9 @@ export class PageViewer {
   }
 
   onVirtualScroll(event: Event): void {
-    // TODO: rename
     const scrollContainer = event.currentTarget as HTMLDivElement | null;
 
-    if (scrollContainer == null) { // lint smart for ==
+    if (scrollContainer == null) {
       return;
     }
 
@@ -119,12 +191,10 @@ export class PageViewer {
     const scrollTop = scrollContainer.scrollTop;
     const clientHeight =  scrollContainer.clientHeight;
 
-    // console.log('Full view scroll: ' + (scrollTop + clientHeight) + ' of ' + scrollHeight);
     const scrollRatio = scrollHeight === 0
       ? 0
       : (scrollTop + clientHeight) / scrollHeight;
 
-    // console.log(scrollRatio)
     this.scrollRatio.set(scrollRatio);
   }
 
