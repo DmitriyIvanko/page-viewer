@@ -1,5 +1,13 @@
 <div class="main-header">
   Page viewer
+  <button (click)="onIncreaseZoom()">
+    +
+  </button>
+  <button (click)="onDecreaseZoom()">
+    -
+  </button>
+  Zoom: {{ zoom() }}
+
 </div>
 <div class="main-container">
   <div class="virtual-scroll-container"

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 
 import { MOCK_DATA } from './api.mock';
-import { INITIAL_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT } from './page-viewer.const';
+import { INITIAL_ZOOM, MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT, ZOOM_STEP } from './page-viewer.const';
 import { ScrollHelper } from './scroll-helper';
 
 @Component({
@@ -13,8 +13,14 @@ import { ScrollHelper } from './scroll-helper';
 export class PageViewer {
   readonly data = signal(MOCK_DATA);
   readonly pageList = computed(() => this.data().pages);
-  readonly pageWidth = signal(PAGE_WIDTH_PX)
-  readonly pageHeight = signal(PAGE_HEIGHT_PX);
+  // readonly pageWidth = signal(PAGE_WIDTH_PX)
+  readonly pageWidth = computed(() => {
+    return  this.zoom() * PAGE_WIDTH_PX;
+  })
+  //readonly pageHeight = signal(PAGE_HEIGHT_PX);
+  readonly pageHeight = computed(() => {
+    return this.zoom() * PAGE_HEIGHT_PX;
+  })
   readonly totalHeight = computed(() => this.pageHeight() * this.pageList().length * this.zoom());
   readonly zoom = signal(INITIAL_ZOOM);
   readonly renderedRange = computed(() => {
@@ -70,6 +76,7 @@ export class PageViewer {
       }
 
       const scrollTo = scrollToRatio * renderedTotalHeight;
+      console.log(scrollTo)
 
       requestAnimationFrame(() => {
         renderedPagesElement.scroll({
@@ -77,6 +84,14 @@ export class PageViewer {
         });
       });
     })
+  }
+
+  onIncreaseZoom(): void {
+    this.zoom.update((zoom) => Math.min(MAX_ZOOM, zoom + ZOOM_STEP));
+  }
+
+  onDecreaseZoom(): void {
+    this.zoom.update((zoom) => Math.max(MIN_ZOOM, zoom - ZOOM_STEP));
   }
 
   onVirtualScroll(event: Event): void {
