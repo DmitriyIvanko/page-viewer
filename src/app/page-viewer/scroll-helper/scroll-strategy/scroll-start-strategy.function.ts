@@ -1,4 +1,4 @@
-import { WIDTH_EPS } from "../../page-viewer.const";
+import { PAGE_HEIGHT_PX, WIDTH_EPS } from "../../page-viewer.const";
 
 export function scrollStartStrategy(args: {
   clientHeight: number,
@@ -9,7 +9,7 @@ export function scrollStartStrategy(args: {
   scrollRatio: number,
 }): number | null {
   const startX = args.clientHeight / args.totalHeightValue;
-  const endX1 = 1 / args.totalPageCount - WIDTH_EPS;
+  const endX1 = PAGE_HEIGHT_PX / args.totalHeightValue - WIDTH_EPS;
   const x = Math.max(0, endX1 - startX);
 
   const startY = args.clientHeight / args.renderedTotalHeight;

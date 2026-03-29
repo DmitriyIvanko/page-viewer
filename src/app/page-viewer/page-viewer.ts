@@ -56,7 +56,7 @@ export class PageViewer {
       const totalHeightValue = this.totalHeight();
       const renderedPagesCount = this.renderedPages().length;
       const totalPageCount = this.pageList().length;
-      const renderedTotalHeight = renderedPagesCount * PAGE_HEIGHT_PX;
+      const renderedTotalHeight = renderedPagesCount * this.pageHeight();
 
       if (renderedPagesElement == null || totalHeightValue === 0 || renderedTotalHeight === 0) {
         return;
@@ -70,6 +70,7 @@ export class PageViewer {
         scrollRatio: this.scrollRatio(),
         totalHeightValue,
         totalPageCount,
+        zoom: this.zoom(),
       })
 
       if (scrollToRatio == null) {

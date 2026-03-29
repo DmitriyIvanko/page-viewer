@@ -6,4 +6,5 @@ export interface CalcPageScrollRatioArgs {
   scrollRatio: number,
   totalHeightValue: number,
   totalPageCount: number,
+  zoom: number,
 }
