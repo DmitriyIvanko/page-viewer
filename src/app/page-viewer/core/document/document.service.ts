@@ -1,8 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 import { DocumentMapper} from './document.mapper';
-import { MOCK_DOCUMENT_RESPONSE } from './page.mock-data';
 import { DocumentModel } from './document.model';
+import { DocumentSaveModel } from './document-save.model';
+import { MOCK_DOCUMENT_RESPONSE } from './page.mock-data';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +15,20 @@ export class DocumentService {
   // TODO: for future implementation:
   // private readonly httpClient = inject(HttpClient);
 
-  get(documentId: string): DocumentModel {
- // TODO: for future implementation:
+  get(documentId: string): Observable<DocumentModel> {
+    // TODO: for future implementation:
     // const url = `some-url${documentId}`;
     // this.httpClient.get(url).map((response) => this.mapper.mapInstanceToClient(response));
 
-    return this.mapper.mapInstanceToClient(MOCK_DOCUMENT_RESPONSE)
+    return of(this.mapper.mapInstanceToClient(MOCK_DOCUMENT_RESPONSE));
+  }
+
+  save(args: DocumentSaveModel): Observable<boolean> {
+    try {
+      console.log(args);
+      return of(true);
+    } catch {
+      return of(false);
+    }
   }
 }
