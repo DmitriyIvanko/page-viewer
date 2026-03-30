@@ -1,0 +1,18 @@
+<!-- TO DO: add markup and fonr/icons: -->
+@if (notificationList().length > 1) {
+  <button (click)="onCloseAllClick()">
+    Close All
+  </button>
+}
+@for (notification of notificationList(); track notification.id) {
+  <button type="button"
+          (click)="onClose(notification.id)">
+    X
+  </button>
+  <div>
+    Type: {{ notification.type ?? 'ERROR' }}
+  </div>
+  <div>
+    Message: {{ notification.message }}
+  </div>
+}

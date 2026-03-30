@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PageViewer } from './page-viewer';
+import { PageViewer, NotificationComponent } from './page-viewer';
+import {  } from './page-viewer';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
-  imports: [PageViewer],
+  imports: [PageViewer, NotificationComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
