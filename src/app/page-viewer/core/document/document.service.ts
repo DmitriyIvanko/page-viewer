@@ -24,11 +24,8 @@ export class DocumentService {
   }
 
   save(args: DocumentSaveModel): Observable<boolean> {
-    try {
-      console.log(args);
-      return of(true);
-    } catch {
-      return of(false);
-    }
+    console.log(args);
+
+    return of(true);
   }
 }
