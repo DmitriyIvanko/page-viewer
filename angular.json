@@ -7,12 +7,21 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
-        }
+          "changeDetection": "OnPush",
+          "style": "scss",
+          "type": "component"
+        },
+        "@schematics/angular:directive": { "type": "directive" },
+        "@schematics/angular:service": { "type": "service" },
+        "@schematics/angular:guard": { "typeSeparator": "." },
+        "@schematics/angular:interceptor": { "typeSeparator": "." },
+        "@schematics/angular:module": { "typeSeparator": "." },
+        "@schematics/angular:pipe": { "typeSeparator": "." },
+        "@schematics/angular:resolver": { "typeSeparator": "." }
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "pv",
       "architect": {
         "build": {
           "builder": "@angular/build:application",

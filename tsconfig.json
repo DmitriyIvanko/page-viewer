@@ -3,9 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
@@ -14,6 +15,10 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "useDefineForClassFields": false,
     "lib": [
       "ESNext",
       "ES2022",
