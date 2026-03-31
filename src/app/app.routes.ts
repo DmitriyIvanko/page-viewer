@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { DOCUMENT_ID_PATH, MOCK_DOCUMENT_ID } from './app.const';
-import { PageViewerComponent } from './page-viewer/page-viewer.component';
+import { PageViewerComponent } from './page-viewer';
 
 export const routes: Routes = [
   {

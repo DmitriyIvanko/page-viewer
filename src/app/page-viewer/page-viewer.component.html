@@ -1,1 +1,39 @@
-<p>page-viewer works!</p>
+<div class="main-header">
+  Page viewer
+  <button (click)="onIncreaseZoom()">
+    +
+  </button>
+  <button (click)="onDecreaseZoom()">
+    -
+  </button>
+  Zoom: {{ zoomS() }}
+  isLoading {{ isLoadingS() }}
+</div>
+<div class="main-container">
+  <div class="virtual-scroll-container"
+       (scroll)="onVirtualScroll($event)">
+    <div class="virtual-scroll"
+         [style.height.px]="totalHeightS()">
+    </div>
+  </div>
+
+    <div #renderedPagesElement
+         class="rendered-pages">
+      @for (page of renderedPageListS(); track page.id) {
+        <div class="page">
+          <img [alt]="'page ' + page.id"
+               [src]="'assets/images/' + page.imageUrl"
+               [height]="pageHeightS()"
+               [width]="pageWidthS()" />
+        </div>
+      } @empty {
+        Empty
+      }
+    </div>
+
+</div>
+
+
+
+
+
