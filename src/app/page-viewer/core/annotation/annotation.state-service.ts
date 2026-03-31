@@ -22,11 +22,12 @@ export class AnnotationStateService {
     this.annotationService.add(entity).pipe(
       handleError<AnnotationModel | null>(this.notificationService, null),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe((entity) => {
+    ).subscribe((response) => {
       this.isLoadingS.set(false);
-
-      if (entity != null)  {
-        this.stateS.update((entityList) => [...entityList, entity]);
+      debugger;
+      if (response != null)  {
+        this.stateS.update((entityList) => [...entityList, response]);
+        debugger;
       }
     });
   }

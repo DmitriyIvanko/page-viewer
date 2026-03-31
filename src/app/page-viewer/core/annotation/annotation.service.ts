@@ -19,12 +19,13 @@ export class AnnotationService {
   private readonly mockAnnotationListS = signal<AnnotationModel[]>([]);
 
   add(annotation: AnnotationModel): Observable<AnnotationModel>{
-    this.mockAnnotationListS.update((annotationList) => [...annotationList, annotation]);
-
-    return of({
+    const newAnnotation = new AnnotationModel({
       ...annotation,
       id: String(ANNOTATION_ID++),
-    });
+    })
+    this.mockAnnotationListS.update((annotationList) => [...annotationList, newAnnotation]);
+
+    return of(newAnnotation);
   }
 
   get(documentId: string): Observable<AnnotationModel[]> {

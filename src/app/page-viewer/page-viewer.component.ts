@@ -33,6 +33,15 @@ export class PageViewerComponent implements OnInit {
   readonly pageHeightS = computed(() => this.zoomS() * PAGE_HEIGHT_PX);
   readonly pageListS = computed(() => this.documentStateService.stateS()?.pageList ?? []);
   readonly pageWidthS = computed(() => this.zoomS() * PAGE_WIDTH_PX);
+  readonly renderedAnnotationListS = computed(() => {
+    const resultList = this.annotationListS().filter((annotation) => {
+      return this.renderedPageListS().some((page) => {
+        return page.id === annotation.pageId;
+      });
+    });
+    console.log(resultList);
+    return resultList;
+  });
   readonly renderedPageListS = computed(() => {
     const renderedPageList = this.pageListS().slice(this.renderedRangeS().start, this.renderedRangeS().end + 1);
     return renderedPageList; // TODO: improve
@@ -118,6 +127,24 @@ export class PageViewerComponent implements OnInit {
     }, { injector: this.injector });
   }
 
+  // TODO: replace to pipe:
+  calcY(annotation: AnnotationModel): number {
+    const renderedPageIndex = this.renderedPageListS().findIndex((page) => page.id === annotation.pageId);
+    const pageY = renderedPageIndex * this.pageHeightS();
+    const y = pageY + annotation.point.y;
+
+    const renderedPagesElement = this.renderedPagesElementS()?.nativeElement as HTMLDivElement | undefined;
+
+    if (renderedPagesElement == null) {
+      console.log('warn');
+      return annotation.point.y;
+    }
+
+    return y - renderedPagesElement.scrollTop;
+    // const y = annotation.point.y + annotation.pageId
+    // return annotation.point.y;
+  }
+
   onAddAnnotation(event: MouseEvent): void {
     if (!this.isAddAnnotationModeS()) {
       return;
@@ -135,7 +162,7 @@ export class PageViewerComponent implements OnInit {
 
     this.annotationStateService.add(new AnnotationModel({
       message: 'Empty annotation',
-      pageId: String(pageIndex),
+      pageId: String(pageIndex + 1),
       point: {
         x: event.offsetX,
         y: pageOffsetY,

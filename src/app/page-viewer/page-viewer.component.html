@@ -24,10 +24,10 @@
   </div>
 
   <div class="annotation-container">
-    @for (annotation of annotationListS(); track annotation.id) {
+    @for (annotation of renderedAnnotationListS(); track annotation.id) {
       <div class="annotation"
-           [style.top.px]="annotation.point.y"
-           [style.left.px]="annotation.point.x">
+           [style.left.px]="annotation.point.x"
+           [style.top.px]="calcY(annotation)">
         {{ annotation.message }}
       </div>
     }
