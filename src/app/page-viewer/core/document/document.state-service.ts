@@ -21,27 +21,24 @@ export class DocumentStateService {
   get(documentId: string): void {
     this.isLoadingS.set(true);
     this.documentService.get(documentId).pipe(
-      handleError(this.notificationService),
+      handleError<DocumentModel | null>(this.notificationService, null),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe((document) => {
+    ).subscribe((entity) => {
       this.isLoadingS.set(false);
-      this.stateS.set(document);
+      this.stateS.set(entity);
     });
   }
 
   save(request: DocumentSaveModel): void {
     this.isLoadingS.set(true);
     this.documentService.save(request).pipe(
-      handleError(this.notificationService),
+      handleError<boolean>(this.notificationService, false),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe((response) => {
       this.isLoadingS.set(false);
 
       if (!response) {
-        this.notificationService.addNotification({
-          message: 'Document not saved',
-          type: 'ERROR',
-        })
+        this.notificationService.addNotification({ message: 'Document not saved' });
       }
     });
   }

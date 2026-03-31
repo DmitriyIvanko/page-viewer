@@ -23,7 +23,12 @@
       "ESNext",
       "ES2022",
       "dom"
-    ]
+    ],
+    "paths": {
+      "core": [
+        "src/app/core",
+      ],
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
