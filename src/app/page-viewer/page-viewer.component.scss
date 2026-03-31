@@ -26,6 +26,9 @@ $header_vh: 5vh;
 .page {
   display: flex;
   justify-content: center;
+
+  // remove
+  border: 1px solid black;
 }
 
 .virtual-scroll-container {
@@ -49,6 +52,9 @@ $header_vh: 5vh;
   width: 100%;
 }
 
-.add-mode {
-  color: red;
+.annotation {
+  position: absolute;
+  border: 1px solid grey;
+  border-radius: 4px;
+  padding: 4px;
 }

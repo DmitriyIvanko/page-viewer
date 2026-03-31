@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 
 import { DOCUMENT_ID_PATH } from '../app.const';
-import { AnnotationStateService, DocumentStateService } from './core';
+import { AnnotationModel, AnnotationStateService, DocumentStateService } from './core';
 import { INITIAL_ZOOM, MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT, ZOOM_STEP } from './page-viewer.const';
 import { ScrollHelper } from './scroll-helper';
 
@@ -18,7 +18,7 @@ import { ScrollHelper } from './scroll-helper';
   }
 })
 export class PageViewerComponent implements OnInit {
-  readonly annotationList = computed(() => this.annotationStateService.stateS());
+  readonly annotationListS = computed(() => this.annotationStateService.stateS());
   readonly currentVisiblePageIndexS = computed(() => {
     const totalPage = this.pageListS().length;
 
@@ -116,6 +116,33 @@ export class PageViewerComponent implements OnInit {
         });
       });
     }, { injector: this.injector });
+  }
+
+  onAddAnnotation(event: MouseEvent): void {
+    if (!this.isAddAnnotationModeS()) {
+      return;
+    }
+
+    const renderedPagesElement = this.renderedPagesElementS()?.nativeElement as HTMLDivElement | undefined;
+
+    if (renderedPagesElement == null) {
+      return;
+    }
+
+    const clickY = renderedPagesElement.scrollTop + event.offsetY;
+    const pageIndex = this.renderedRangeS().start + Math.trunc(clickY / this.pageHeightS());
+    const pageOffsetY = clickY % this.pageHeightS();
+
+    this.annotationStateService.add(new AnnotationModel({
+      message: 'Empty annotation',
+      pageId: String(pageIndex),
+      point: {
+        x: event.offsetX,
+        y: pageOffsetY,
+      },
+    }));
+
+    this.isAddAnnotationModeS.set(false);
   }
 
   onAddAnnotationMode(): void {

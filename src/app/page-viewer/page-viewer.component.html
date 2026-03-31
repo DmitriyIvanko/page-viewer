@@ -1,6 +1,7 @@
 <div class="main-header">
   Page viewer
   <button (click)="onAddAnnotationMode()">Add annotation</button>
+  AnnotationList {{ annotationListS().length }}
 
   <button (click)="onIncreaseZoom()">
     +
@@ -13,6 +14,7 @@
   Rp: {{ renderedPageListS().length }}
 </div>
 <div class="main-container"
+     (click)="onAddAnnotation($event)"
      (contextmenu)="onCancelAddAnnotationMode($event)">
   <div class="virtual-scroll-container"
        (scroll)="onVirtualScroll($event)">
@@ -21,19 +23,31 @@
     </div>
   </div>
 
-    <div #renderedPagesElement
-         class="rendered-pages">
-      @for (page of renderedPageListS(); track page.id) {
-        <div class="page">
-          <img [alt]="'page ' + page.id"
-               [src]="'assets/images/' + page.imageUrl"
-               [height]="pageHeightS()"
-               [width]="pageWidthS()" />
-        </div>
-      } @empty {
-        Empty
-      }
-    </div>
+  <div class="annotation-container">
+    @for (annotation of annotationListS(); track annotation.id) {
+      <div class="annotation"
+           [style.top.px]="annotation.point.y"
+           [style.left.px]="annotation.point.x">
+        {{ annotation.message }}
+      </div>
+    }
+  </div>
+
+  <div #renderedPagesElement
+        class="rendered-pages">
+    @for (page of renderedPageListS(); track page.id) {
+      <div class="page">
+        <img [alt]="'page ' + page.id"
+              [src]="'assets/images/' + page.imageUrl"
+              [height]="pageHeightS()"
+              [width]="pageWidthS()" />
+      </div>
+    } @empty {
+      Empty
+    }
+  </div>
+
+
 
 </div>
 

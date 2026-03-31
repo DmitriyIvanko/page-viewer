@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { AnnotationMapper } from './annotation.mapper';
 import { AnnotationModel } from './annotation.model';
 
+let ANNOTATION_ID = 0;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +21,10 @@ export class AnnotationService {
   add(annotation: AnnotationModel): Observable<AnnotationModel>{
     this.mockAnnotationListS.update((annotationList) => [...annotationList, annotation]);
 
-    return of(annotation);
+    return of({
+      ...annotation,
+      id: String(ANNOTATION_ID++),
+    });
   }
 
   get(documentId: string): Observable<AnnotationModel[]> {
