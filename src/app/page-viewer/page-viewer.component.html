@@ -1,5 +1,7 @@
 <div class="main-header">
   Page viewer
+  <button (click)="onAddAnnotationMode()">Add annotation</button>
+
   <button (click)="onIncreaseZoom()">
     +
   </button>
@@ -10,7 +12,8 @@
   isLoading {{ isLoadingS() }}
   Rp: {{ renderedPageListS().length }}
 </div>
-<div class="main-container">
+<div class="main-container"
+     (contextmenu)="onCancelAddAnnotationMode($event)">
   <div class="virtual-scroll-container"
        (scroll)="onVirtualScroll($event)">
     <div class="virtual-scroll"

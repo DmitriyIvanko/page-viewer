@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, HostBinding, HostListener, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 
 import { DOCUMENT_ID_PATH } from '../app.const';
-import { DocumentStateService } from './core';
+import { AnnotationStateService, DocumentStateService } from './core';
 import { INITIAL_ZOOM, MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT_PX, PAGE_WIDTH_PX, PRELOAD_PAGES_COUNT, ZOOM_STEP } from './page-viewer.const';
 import { ScrollHelper } from './scroll-helper';
 
@@ -13,9 +13,12 @@ import { ScrollHelper } from './scroll-helper';
   templateUrl: './page-viewer.component.html',
   styleUrl: './page-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.add-mode]': 'this.isAddAnnotationModeS()',
+  }
 })
 export class PageViewerComponent implements OnInit {
-
+  readonly annotationList = computed(() => this.annotationStateService.stateS());
   readonly currentVisiblePageIndexS = computed(() => {
     const totalPage = this.pageListS().length;
 
@@ -25,7 +28,8 @@ export class PageViewerComponent implements OnInit {
 
     return Math.min(totalPage - 1, Math.trunc(totalPage * this.scrollRatioS()));
   })
-  readonly isLoadingS = computed(() => this.documentStateService.isLoadingS() || false); // TODO: add other service
+  readonly isAddAnnotationModeS = signal(false);
+  readonly isLoadingS = computed(() => this.documentStateService.isLoadingS() || this.annotationStateService.isLoadingS());
   readonly pageHeightS = computed(() => this.zoomS() * PAGE_HEIGHT_PX);
   readonly pageListS = computed(() => this.documentStateService.stateS()?.pageList ?? []);
   readonly pageWidthS = computed(() => this.zoomS() * PAGE_WIDTH_PX);
@@ -46,6 +50,7 @@ export class PageViewerComponent implements OnInit {
   readonly zoomS = signal(INITIAL_ZOOM);
 
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly annotationStateService = inject(AnnotationStateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly documentIdS = signal<string | null>(null);
   private readonly documentStateService = inject(DocumentStateService);
@@ -71,6 +76,7 @@ export class PageViewerComponent implements OnInit {
       }
 
       this.documentStateService.get(documentId);
+      this.annotationStateService.get(documentId);
     }, { injector: this.injector });
 
     // virtual scroll:
@@ -112,6 +118,19 @@ export class PageViewerComponent implements OnInit {
     }, { injector: this.injector });
   }
 
+  onAddAnnotationMode(): void {
+    this.isAddAnnotationModeS.set(true);
+  }
+
+  @HostListener('window:keydown.esc', ['$event'])
+  onCancelAddAnnotationMode(event: Event): void {
+    if (this.isAddAnnotationModeS()) {
+      event.preventDefault();
+    }
+
+    this.isAddAnnotationModeS.set(false);
+  }
+
   onIncreaseZoom(): void {
     this.zoomS.update((zoom) => Math.min(MAX_ZOOM, zoom + ZOOM_STEP));
   }
@@ -119,6 +138,7 @@ export class PageViewerComponent implements OnInit {
   onDecreaseZoom(): void {
     this.zoomS.update((zoom) => Math.max(MIN_ZOOM, zoom - ZOOM_STEP));
   }
+
 
   onVirtualScroll(event: Event): void {
     const scrollContainer = event.target as HTMLDivElement | null;
@@ -136,6 +156,4 @@ export class PageViewerComponent implements OnInit {
 
     this.scrollRatioS.set(scrollRatio);
   }
-
-
 }
