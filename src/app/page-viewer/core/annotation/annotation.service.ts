@@ -38,7 +38,7 @@ export class AnnotationService {
       return [...resultList, annotation];
     });
 
-    return of(annotation);
+    return of(new AnnotationModel(annotation));
   }
 
   remove(annotationId: string): Observable<string> {

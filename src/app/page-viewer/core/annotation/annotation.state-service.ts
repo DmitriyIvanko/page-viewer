@@ -24,10 +24,8 @@ export class AnnotationStateService {
       takeUntilDestroyed(this.destroyRef),
     ).subscribe((response) => {
       this.isLoadingS.set(false);
-      debugger;
       if (response != null)  {
         this.stateS.update((entityList) => [...entityList, response]);
-        debugger;
       }
     });
   }
@@ -64,14 +62,15 @@ export class AnnotationStateService {
     this.annotationService.update(entity).pipe(
       handleError<AnnotationModel | null>(this.notificationService, null),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe((entity) => {
+    ).subscribe((response) => {
       this.isLoadingS.set(false);
+      debugger;
 
-      if (entity != null)  {
+      if (response != null)  {
         this.stateS.update((entityList) => {
-          const restList = entityList.filter((entity) => entity.id !== entity.id);
+          const restList = entityList.filter((item) => item.id !== response.id);
 
-          return [...restList, entity];
+          return [...restList, response];
         });
       }
     });

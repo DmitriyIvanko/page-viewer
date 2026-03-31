@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, HostBinding, HostListener, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, ElementRef, HostListener, inject, Injector, OnInit, signal, untracked, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { DOCUMENT_ID_PATH } from '../app.const';
@@ -9,7 +10,7 @@ import { ScrollHelper } from './scroll-helper';
 
 @Component({
   selector: 'pv-page-viewer',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './page-viewer.component.html',
   styleUrl: './page-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,7 +40,6 @@ export class PageViewerComponent implements OnInit {
         return page.id === annotation.pageId;
       });
     });
-    console.log(resultList);
     return resultList;
   });
   readonly renderedPageListS = computed(() => {
@@ -84,8 +84,10 @@ export class PageViewerComponent implements OnInit {
         return;
       }
 
-      this.documentStateService.get(documentId);
-      this.annotationStateService.get(documentId);
+      untracked(() => {
+        this.documentStateService.get(documentId);
+        this.annotationStateService.get(documentId);
+      });
     }, { injector: this.injector });
 
     // virtual scroll:
@@ -141,8 +143,6 @@ export class PageViewerComponent implements OnInit {
     }
 
     return y - renderedPagesElement.scrollTop;
-    // const y = annotation.point.y + annotation.pageId
-    // return annotation.point.y;
   }
 
   onAddAnnotation(event: MouseEvent): void {
@@ -174,6 +174,13 @@ export class PageViewerComponent implements OnInit {
 
   onAddAnnotationMode(): void {
     this.isAddAnnotationModeS.set(true);
+  }
+
+  onAnnotationMessageChange(message: string, annotation: AnnotationModel): void {
+    this.annotationStateService.update(new AnnotationModel({
+      ...annotation,
+      message,
+    }));
   }
 
   onRemoveAnnotation(annotationId: string | null): void {

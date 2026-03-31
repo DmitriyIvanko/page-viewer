@@ -28,7 +28,9 @@
       <div class="annotation"
            [style.left.px]="annotation.point.x"
            [style.top.px]="calcY(annotation)">
-        {{ annotation.message }}
+        <input class="annotation-input"
+               [ngModel]="annotation.message"
+               (ngModelChange)="onAnnotationMessageChange($event, annotation)" />
         <button (click)="onRemoveAnnotation(annotation.id)">X</button>
       </div>
     }
