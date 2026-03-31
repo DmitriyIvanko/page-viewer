@@ -176,6 +176,14 @@ export class PageViewerComponent implements OnInit {
     this.isAddAnnotationModeS.set(true);
   }
 
+  onRemoveAnnotation(annotationId: string | null): void {
+    if (annotationId == null) {
+      return;
+    }
+
+    this.annotationStateService.remove(annotationId);
+  }
+
   @HostListener('window:keydown.esc', ['$event'])
   onCancelAddAnnotationMode(event: Event): void {
     if (this.isAddAnnotationModeS()) {

@@ -29,6 +29,7 @@
            [style.left.px]="annotation.point.x"
            [style.top.px]="calcY(annotation)">
         {{ annotation.message }}
+        <button (click)="onRemoveAnnotation(annotation.id)">X</button>
       </div>
     }
   </div>
