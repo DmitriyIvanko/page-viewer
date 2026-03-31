@@ -20,7 +20,6 @@ export class ScrollHelper {
   }: CalcPageScrollRatioArgs): number | null {
 
     const type = this.getType(currentPageIndex, totalPageCount - 1);
-    console.log(type);
 
     switch (type) {
       case 'start': {
@@ -31,7 +30,6 @@ export class ScrollHelper {
           totalHeightValue,
           renderedTotalHeight,
           totalPageCount,
-          // zoom,
         });
       }
       case 'middle': {

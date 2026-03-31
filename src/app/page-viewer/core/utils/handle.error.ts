@@ -3,10 +3,10 @@ import { NotificationService, NotificationType } from '../notification';
 
 export function handleError<T>(
   notificationService: NotificationService,
-  defaultValue: T | null = null,
+  defaultValue: T,
   type?: NotificationType,
-): OperatorFunction<T, T | null> {
-  return (source$: Observable<T>): Observable<T | null> => {
+): OperatorFunction<T, T> {
+  return (source$: Observable<T>): Observable<T> => {
     return source$.pipe(
       catchError((error: Error) => {
         notificationService.addNotification({

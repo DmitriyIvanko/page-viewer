@@ -28,7 +28,6 @@ export class PageViewer {
       end: Math.min(this.pageList().length - 1, currentPageIndex + PRELOAD_PAGES_COUNT),
     };
 
-    console.log(result);
     return result;
   });
   readonly currentVisiblePageIndex = computed(() => {
@@ -42,7 +41,6 @@ export class PageViewer {
   })
   readonly renderedPages = computed(() => {
     const renderedPages = this.pageList().slice(this.renderedRange().start, this.renderedRange().end + 1);
-    console.log(renderedPages)
     return renderedPages;
   });
   private readonly scrollRatio = signal<number>(0);
@@ -79,7 +77,6 @@ export class PageViewer {
       }
 
       const scrollTo = scrollToRatio * renderedTotalHeight;
-      // console.log(scrollTo)
 
       requestAnimationFrame(() => {
         renderedPagesElement.scroll({

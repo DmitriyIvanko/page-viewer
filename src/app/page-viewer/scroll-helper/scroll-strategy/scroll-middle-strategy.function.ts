@@ -22,6 +22,5 @@ export function scrollMiddleStrategy(args: {
 
   const scrollToRatio = y / (widthWithShift) * (args.scrollRatio - width * args.currentPageIndex) + shiftY - (zoomF) ;
 
-  console.log(scrollToRatio);
   return scrollToRatio;
 }
